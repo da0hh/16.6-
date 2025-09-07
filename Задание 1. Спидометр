@@ -1,0 +1,24 @@
+#include <iostream>
+#include <cmath>
+#include <cstdio>
+
+using namespace std;
+
+int main() {
+    setlocale(LC_ALL, "RU");
+    float delta, speed = 0.f;
+    char speed_str[20];
+
+    do {
+        cout << "Delta speed: "; cin >> delta;
+        speed += delta;
+
+        if (speed > 150.f)
+            speed = 150.0;
+        else if (speed < 0.f)
+            speed = 0.0;
+
+        sprintf(speed_str, "%.1f", speed);
+        cout << speed_str << endl;
+    } while (speed > 0.f);
+}
