@@ -1,0 +1,17 @@
+#include <iostream>
+#include <string>
+
+using namespace std;
+
+int main() {
+    setlocale(LC_ALL, "RU");
+    string firstHalf, secondHalf;
+    double result;
+
+    cout << "Введите целую часть: "; cin >> firstHalf;
+    cout << "Введите дробную часть: "; cin >> secondHalf;
+
+    string num = firstHalf + "." + secondHalf;
+    result = stod(num);
+    cout << result;
+}
