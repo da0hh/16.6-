@@ -1,0 +1,91 @@
+#include <iostream>
+#include <sstream>
+#include <iomanip>
+
+using namespace std;
+
+enum Switches {
+    LIGHTS_INSIDE = 1,
+    LIGHTS_OUTSIDE = 2,
+    HEATERS = 4,
+    WATER_PIPE_HEATING = 8,
+    CONDITIONER = 16
+};
+
+int main() {
+    setlocale(LC_ALL, "RU");
+    int inside_temp = 0;
+    int outside_temp = 0;
+    bool movement = false;
+    bool lights_status = false;
+    int current_hour = 0;
+    int color_temp = 5000;
+    int switches_state = 0;
+
+    for (int hour = 0; hour < 48; hour++) {
+        current_hour = hour % 24;
+
+        cout << "Temperature inside, temperature outside, movement, lights:\n";
+        string input;
+        getline(cin, input);
+        stringstream ss(input);
+        ss >> inside_temp >> outside_temp;
+
+        string move_str, light_str;
+        ss >> move_str >> light_str;
+        movement = (move_str == "yes");
+        lights_status = (light_str == "on");
+
+        if (outside_temp < 0 && !(switches_state & WATER_PIPE_HEATING)) {
+            switches_state |= WATER_PIPE_HEATING;
+            cout << "Water pipe heating ON!" << endl;
+        }
+        else if (outside_temp > 5 && (switches_state & WATER_PIPE_HEATING)) {
+            switches_state &= ~WATER_PIPE_HEATING;
+            cout << "Water pipe heating OFF!" << endl;
+        }
+
+        if ((current_hour >= 16 || current_hour < 5) && movement && !(switches_state & LIGHTS_OUTSIDE)) {
+            switches_state |= LIGHTS_OUTSIDE;
+            cout << "Lights outside ON!" << endl;
+        }
+        else if (!(current_hour >= 16 || current_hour < 5) || !movement && (switches_state & LIGHTS_OUTSIDE)) {
+            switches_state &= ~LIGHTS_OUTSIDE;
+            cout << "Lights outside OFF!" << endl;
+        }
+
+        if (inside_temp < 22 && !(switches_state & HEATERS)) {
+            switches_state |= HEATERS;
+            cout << "Heaters ON!" << endl;
+        }
+        else if (inside_temp >= 25 && (switches_state & HEATERS)) {
+            switches_state &= ~HEATERS;
+            cout << "Heaters OFF!" << endl;
+        }
+
+        if (inside_temp >= 30 && !(switches_state & CONDITIONER)) {
+            switches_state |= CONDITIONER;
+            cout << "Conditioner ON!" << endl;
+        }
+        else if (inside_temp < 25 && (switches_state & CONDITIONER)) {
+            switches_state &= ~CONDITIONER;
+            cout << "Conditioner OFF!" << endl;
+        }
+
+        if (lights_status) {
+            cout << "Lights ON!" << endl;
+
+            if (current_hour >= 16 && current_hour < 20) {
+                color_temp = 5000 - (current_hour - 16) * 550;
+            }
+            else if (current_hour == 0) {
+                color_temp = 5000;
+            }
+
+            cout << "Color temperature: " << color_temp << "K" << endl;
+        }
+        else {
+            cout << "Lights OFF";
+        }
+    }
+}
